@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>مولد QR احترافي</title>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+  <style>
+    body {
+      background: linear-gradient(to bottom right, #e0f7fa, #e1bee7);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    h2 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    input, select {
+      width: 300px;
+      padding: 10px;
+      margin: 8px 0;
+      font-size: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      text-align: center;
+    }
+
+    label {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #6200ea;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #3700b3;
+    }
+
+    #qrcode {
+      margin-top: 25px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>مولد رمز QR احترافي</h2>
+
+  <input type="text" id="link" placeholder="أدخل الرابط هنا">
+
+  <label>اسم الصورة:</label>
+  <input type="text" id="filename" placeholder="اسم الملف (بدون امتداد)">
+
+  <label>اختر الصيغة:</label>
+  <select id="format">
+    <option value="png">PNG</option>
+    <option value="jpeg">JPG</option>
+    <option value="webp">WebP</option>
+  </select>
+
+  <label>لون رمز QR:</label>
+  <input type="color" id="color" value="#000000">
+
+  <label>لون الخلفية:</label>
+  <input type="color" id="bgColor" value="#ffffff">
+
+  <button onclick="generateQR()">إنشاء رمز</button>
+
+  <div id="qrcode"></div>
+  <button id="saveBtn" style="display:none;" onclick="downloadQR()">حفظ الصورة</button>
+
+  <script>
+    let canvasElement = null;
+
+    function generateQR() {
+      const link = document.getElementById('link').value.trim();
+      const color = document.getElementById('color').value;
+      const bgColor = document.getElementById('bgColor').value;
+      const qrDiv = document.getElementById('qrcode');
+
+      qrDiv.innerHTML = '';
+      document.getElementById('saveBtn').style.display = 'none';
+
+      if (!link) {
+        alert("يرجى إدخال الرابط أولاً");
+        return;
+      }
+
+      const options = {
+        width: 250,
+        color: {
+          dark: color,
+          light: bgColor
+        }
+      };
+
+      QRCode.toCanvas(link, options, function (err, canvas) {
+        if (err) {
+          console.error(err);
+          alert("حدث خطأ أثناء توليد الكود");
+          return;
+        }
+        canvasElement = canvas;
+        qrDiv.appendChild(canvas);
+        document.getElementById('saveBtn').style.display = 'inline-block';
+      });
+    }
+
+    function downloadQR() {
+      if (!canvasElement) return;
+
+      const format = document.getElementById('format').value;
+      const filename = document.getElementById('filename').value.trim() || 'qrcode';
+
+      const link = document.createElement('a');
+      link.download = `${filename}.${format}`;
+      link.href = canvasElement.toDataURL(`image/${format}`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  </script>
+
+</body>
+</html>
