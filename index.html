@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>مولد QR</title>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+  <style>
+    body {
+      background-color: #f9f9f9;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      height: 100vh;
+      margin: 0;
+    }
+
+    h2 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    input {
+      width: 300px;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      text-align: center;
+    }
+
+    button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    #qrcode {
+      margin-top: 25px;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>مولد رمز QR</h2>
+  <input type="text" id="link" placeholder="أدخل الرابط هنا">
+  <button onclick="generateQR()">إنشاء رمز</button>
+
+  <div id="qrcode"></div>
+  <button id="saveBtn" style="display:none;" onclick="downloadQR()">حفظ الصورة</button>
+
+  <script>
+    let canvasElement = null;
+
+    function generateQR() {
+      const link = document.getElementById('link').value.trim();
+      const qrDiv = document.getElementById('qrcode');
+      qrDiv.innerHTML = '';
+      document.getElementById('saveBtn').style.display = 'none';
+
+      if (!link) {
+        alert("من فضلك أدخل رابطًا أولاً");
+        return;
+      }
+
+      QRCode.toCanvas(link, { width: 250 }, function (err, canvas) {
+        if (err) {
+          console.error(err);
+          alert("حدث خطأ أثناء إنشاء الكود");
+          return;
+        }
+        canvasElement = canvas;
+        qrDiv.appendChild(canvas);
+        document.getElementById('saveBtn').style.display = 'inline-block';
+      });
+    }
+
+    function downloadQR() {
+      if (!canvasElement) {
+        alert("يجب أولاً إنشاء الكود");
+        return;
+      }
+
+      const link = document.createElement('a');
+      link.download = 'qrcode.png';
+      link.href = canvasElement.toDataURL("image/png");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  </script>
+
+</body>
+</html>
